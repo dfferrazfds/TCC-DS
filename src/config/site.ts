@@ -12,7 +12,8 @@ export type SectionId =
   | "impacto"
   | "casos"
   | "vozes"
-  | "faq";
+  | "faq"
+  | "contato";
 
 export type IconKey =
   | "leaf"
@@ -172,6 +173,33 @@ interface SiteConfig {
     readonly items: readonly { readonly question: string; readonly answer: string }[];
     readonly fallback: string;
   };
+  readonly contact: {
+    readonly eyebrow: string;
+    readonly title: string;
+    readonly description: string;
+    readonly services: readonly { readonly value: string; readonly label: string }[];
+    readonly labels: {
+      readonly name: string;
+      readonly email: string;
+      readonly phone: string;
+      readonly service: string;
+      readonly message: string;
+      readonly consent: string;
+      readonly submit: string;
+      readonly submitting: string;
+    };
+    readonly placeholders: {
+      readonly name: string;
+      readonly email: string;
+      readonly phone: string;
+      readonly message: string;
+    };
+    readonly successTitle: string;
+    readonly successDescription: string;
+    readonly errorTitle: string;
+    readonly errorDescription: string;
+    readonly notConfigured: string;
+  };
   readonly footer: {
     readonly description: string;
     readonly columns: readonly {
@@ -271,6 +299,12 @@ export const site = {
       navLabel: "FAQ",
       tourTitle: "Perguntas frequentes",
       tourDescription: "As dúvidas que aparecem antes de dar o primeiro passo.",
+    },
+    {
+      id: "contato",
+      navLabel: "Contato",
+      tourTitle: "Vamos conversar",
+      tourDescription: "Conte o seu desafio e a equipe entra em contato diretamente.",
     },
   ],
 
@@ -590,6 +624,43 @@ export const site = {
       },
     ],
     fallback: "Não encontrou sua resposta? Fale com a nossa equipe.",
+  },
+
+  contact: {
+    eyebrow: "09 / CONTATO",
+    title: "Conte o seu desafio. Nós respondemos com uma rota.",
+    description:
+      "Preencha os dados abaixo para solicitar nossos serviços. Um especialista da ecologistica entra em contato diretamente por e-mail ou telefone.",
+    services: [
+      { value: "diagnostico", label: "Diagnóstico de carbono" },
+      { value: "otimizacao", label: "Otimização de rotas" },
+      { value: "frota", label: "Transição para frota limpa" },
+      { value: "consultoria", label: "Consultoria em logística" },
+      { value: "outro", label: "Outro serviço" },
+    ],
+    labels: {
+      name: "Nome completo",
+      email: "E-mail",
+      phone: "Telefone / WhatsApp",
+      service: "Serviço desejado",
+      message: "Conte um pouco sobre sua operação",
+      consent: "Autorizo a ecologistica a entrar em contato pelos dados informados.",
+      submit: "Solicitar contato",
+      submitting: "Enviando...",
+    },
+    placeholders: {
+      name: "Como podemos chamar você?",
+      email: "voce@empresa.com.br",
+      phone: "(11) 99999-9999",
+      message: "Ex.: temos 40 veículos e queremos entender onde estamos emitindo mais.",
+    },
+    successTitle: "Solicitação enviada!",
+    successDescription:
+      "Recebemos seus dados e um especialista da ecologistica entra em contato em breve.",
+    errorTitle: "Não foi possível enviar",
+    errorDescription: "Tente novamente em instantes ou fale com a gente pelo e-mail abaixo.",
+    notConfigured:
+      "O formulário ainda não está configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY no ambiente de build.",
   },
 
   footer: {

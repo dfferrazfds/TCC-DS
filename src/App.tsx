@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { site } from "@/config/site";
 import { useActiveSection } from "@/hooks/use-active-section";
 import { useTour } from "@/hooks/use-tour";
@@ -14,8 +16,30 @@ import { ImpactSection } from "@/components/sections/impact-section";
 import { ProofSection } from "@/components/sections/proof-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { FaqSection } from "@/components/sections/faq-section";
+import { ContactSection } from "@/components/sections/contact-section";
+import { AdminPage } from "@/components/admin/admin-page";
+import { DataPage } from "@/components/admin/data-page";
+
+function useHashRoute() {
+  const [hash, setHash] = useState(() => window.location.hash);
+
+  useEffect(() => {
+    const handleChange = () => setHash(window.location.hash);
+    window.addEventListener("hashchange", handleChange);
+    return () => window.removeEventListener("hashchange", handleChange);
+  }, []);
+
+  return hash;
+}
 
 export default function App() {
+  const hash = useHashRoute();
+  if (hash === "#admin") return <AdminPage />;
+  if (hash === "#dados") return <DataPage />;
+  return <SiteApp />;
+}
+
+function SiteApp() {
   const activeId = useActiveSection();
   const tour = useTour();
 
@@ -41,6 +65,7 @@ export default function App() {
         <ProofSection />
         <TestimonialsSection />
         <FaqSection />
+        <ContactSection />
       </main>
 
       <SiteFooter />
