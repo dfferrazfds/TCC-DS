@@ -1,112 +1,59 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useReducedMotion } from 'framer-motion'
-import { siteConfig } from '@/config/site'
-import { Navbar } from './components/Navbar'
-import { Hero } from './components/Hero'
-import { Ticker } from './components/Ticker'
-import { BusinessModel } from './components/BusinessModel'
-import { Financials } from './components/Financials'
-import { Impact } from './components/Impact'
-import { Assumptions } from './components/Assumptions'
-import { Footer } from './components/Footer'
-import { TourDock } from './components/TourDock'
+import { site } from "@/config/site";
+import { useActiveSection } from "@/hooks/use-active-section";
+import { useTour } from "@/hooks/use-tour";
+import { ScrollProgress } from "@/components/layout/scroll-progress";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { TourController } from "@/components/layout/tour-controller";
+import { HeroSection } from "@/components/sections/hero-section";
+import { ManifestoSection } from "@/components/sections/manifesto-section";
+import { DiagnosticsSection } from "@/components/sections/diagnostics-section";
+import { SolutionSection } from "@/components/sections/solution-section";
+import { RoutesSection } from "@/components/sections/routes-section";
+import { ImpactSection } from "@/components/sections/impact-section";
+import { ProofSection } from "@/components/sections/proof-section";
+import { TestimonialsSection } from "@/components/sections/testimonials-section";
+import { FaqSection } from "@/components/sections/faq-section";
 
 export default function App() {
-  const reduceMotion = useReducedMotion()
-  const [activeStep, setActiveStep] = useState<number | null>(null)
-  const [playing, setPlaying] = useState(false)
-  const totalSteps = siteConfig.tourSteps.length
-
-  const scrollToStep = useCallback(
-    (index: number) => {
-      const node = document.querySelector<HTMLElement>(`[data-tour-step="${index}"]`)
-      if (!node) return
-      node.scrollIntoView({
-        behavior: reduceMotion ? 'auto' : 'smooth',
-        block: 'center',
-      })
-      setActiveStep(index)
-    },
-    [reduceMotion],
-  )
-
-  const stopTour = useCallback(() => {
-    setPlaying(false)
-    setActiveStep(null)
-  }, [])
-
-  const startTour = useCallback(() => {
-    setActiveStep(null)
-    setPlaying(true)
-    window.setTimeout(() => scrollToStep(1), reduceMotion ? 0 : 280)
-  }, [reduceMotion, scrollToStep])
-
-  const goToNext = useCallback(() => {
-    const nextIndex = activeStep === null ? 1 : activeStep + 1
-    if (nextIndex > totalSteps) {
-      stopTour()
-      return
-    }
-    scrollToStep(nextIndex)
-  }, [activeStep, scrollToStep, stopTour, totalSteps])
-
-  const toggleTour = useCallback(() => {
-    if (playing) {
-      setPlaying(false)
-      return
-    }
-    if (activeStep === null) startTour()
-    else setPlaying(true)
-  }, [activeStep, playing, startTour])
-
-  const showAll = useCallback(() => {
-    stopTour()
-    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
-  }, [reduceMotion, stopTour])
-
-  useEffect(() => {
-    if (!playing) return
-    const timer = window.setTimeout(() => {
-      const nextIndex = activeStep === null ? 1 : activeStep + 1
-      if (nextIndex > totalSteps) {
-        stopTour()
-        return
-      }
-      scrollToStep(nextIndex)
-    }, 2800)
-    return () => window.clearTimeout(timer)
-  }, [playing, activeStep, scrollToStep, stopTour, totalSteps])
+  const activeId = useActiveSection();
+  const tour = useTour();
 
   return (
-    <div data-touring={activeStep !== null} className="min-h-screen">
+    <div className="min-h-screen bg-background text-foreground">
       <a
         href="#conteudo"
-        className="sr-only fixed left-4 top-4 z-[90] rounded-full bg-lime px-4 py-2 text-sm font-bold text-ink focus:not-sr-only"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-lime-300 focus:px-5 focus:py-2 focus:text-sm focus:font-semibold focus:text-forest-950"
       >
-        Pular para o conteúdo
+        {site.a11y.skipLink}
       </a>
-      <Navbar />
-      <main id="conteudo" className="pb-28">
-        <Hero />
-        <Ticker />
-        <BusinessModel
-          activeStep={activeStep}
-          onPlay={startTour}
-          onShowAll={showAll}
-          playing={playing}
-        />
-        <Financials activeStep={activeStep} />
-        <Impact />
-        <Assumptions />
+
+      <ScrollProgress />
+      <SiteHeader activeId={activeId} onToggleTour={tour.toggle} isTourPlaying={tour.isPlaying} />
+
+      <main id="conteudo">
+        <HeroSection />
+        <ManifestoSection />
+        <DiagnosticsSection />
+        <SolutionSection />
+        <RoutesSection />
+        <ImpactSection />
+        <ProofSection />
+        <TestimonialsSection />
+        <FaqSection />
       </main>
-      <Footer />
-      <TourDock
-        playing={playing}
-        activeStep={activeStep}
-        onToggle={toggleTour}
-        onNext={goToNext}
-        onStop={stopTour}
+
+      <SiteFooter />
+      <TourController
+        activeIndex={tour.activeIndex}
+        isPlaying={tour.isPlaying}
+        onStart={tour.start}
+        onStop={tour.stop}
+        onToggle={tour.toggle}
+        onNext={tour.next}
+        onPrevious={tour.previous}
+        onGoTo={tour.goTo}
       />
     </div>
-  )
+  );
 }

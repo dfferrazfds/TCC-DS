@@ -1,33 +1,75 @@
-# EcoLogística Guarulhos — front end reformulado
+# ecologistica — reformulado
 
-Cópia reformulada do projeto original. A pasta `ecologistica-modelo-negocios-autoscroll` foi mantida intacta como backup.
+SPA estática de logística regenerativa: React 18 + TypeScript strict + Tailwind CSS 3.4 + Framer Motion 11, com componentes no padrão shadcn/ui (Radix UI + CVA) e conteúdo centralizado em `src/config/site.ts`.
 
-## Stack
+## Rodar localmente
 
-React 18 + TypeScript + Tailwind CSS + componentes no padrão shadcn/ui + Framer Motion + Vite (site estático).
-
-## Como executar
+Requisitos: Node.js 20+ e npm.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Build estático:
+Abra `http://localhost:5173`.
+
+Outros comandos:
 
 ```bash
-npm run build
+npm run typecheck   # checagem TypeScript
+npm run build       # gera dist/
+npm run preview     # serve dist/ localmente
 ```
 
-Os arquivos de saída ficam em `dist/`.
+## Publicar no GitHub Pages
+
+O workflow `.github/workflows/deploy.yml` publica automaticamente a cada push em `main`/`master`.
+
+1. Crie um repositório GitHub (pode ser vazio) e faça o push deste projeto:
+
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit: ecologistica reformulado"
+   git remote add origin https://github.com/<SEU-USUARIO>/<SEU-REPO>.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+2. No repositório, abra **Settings → Pages → Build and deployment** e selecione **GitHub Actions** como *Source*.
+
+3. Acompanhe a aba **Actions**. Ao concluir, a URL do site aparece em **Settings → Pages** (normalmente `https://<SEU-USUARIO>.github.io/<SEU-REPO>/`).
+
+O build já calcula automaticamente o `base` do Vite: usa `/` para repositórios `<usuario>.github.io` e `/<nome-do-repo>/` para os demais. Não é preciso configurar nada manualmente.
+
+## Estrutura
+
+```
+src/
+  config/site.ts            # todo o conteúdo (textos, métricas, rotas, FAQ)
+  components/
+    ui/                     # Button, Badge, Card, Accordion (shadcn/ui)
+    shared/                 # Reveal, SectionHeading, Icon
+    visuals/route-map.tsx   # mapa animado da malha logística
+    sections/               # 9 seções da página
+    layout/                 # header, footer, progresso e tour guiado
+  hooks/                    # useTour, useActiveSection
+  lib/utils.ts              # cn() com clsx + tailwind-merge
+```
+
+## Tour guiado
+
+O controlador percorre as 9 seções automaticamente a cada 8 segundos. Botões de anterior/próximo, pausa e índices clicáveis ficam no HUD inferior. Atalhos: `←` / `→` navegam e `Esc` encerra. O movimento respeita `prefers-reduced-motion`.
+
+## Privacidade e segurança
+
+- O site é 100% estático: não há backend, banco de dados nem servidor próprio. O GitHub Pages força HTTPS.
+- Não há analytics, cookies, rastreadores, `localStorage` ou `sessionStorage`.
+- Fontes são auto-hospedadas (`@fontsource-variable`): nenhuma requisição sai para Google/CDNs.
+- Há uma CSP via `<meta>` limitando scripts, estilos, fontes e conexões ao próprio domínio.
+- Não há formulário nem coleta de dados: os botões de contato abrem o cliente de e-mail do visitante (`mailto:`). Nenhuma informação é armazenada pelo site.
+- Não existem segredos (chaves de API, tokens) no código-fonte, que é público por definição.
 
 ## Conteúdo
 
-Todo o texto e todos os números editáveis estão em `src/config/site.ts`.
-
-## Direção de design
-
-- Tom: orgânico/natural com tipografia editorial.
-- Paleta: floresta profunda + verde-menta + limão elétrico como acento.
-- Elemento memorável: mapa de rotas vivas no hero, com pontos animados e métricas flutuantes.
-- Movimento: entrada orquestrada do hero, revelações por scroll e tour guiado opcional pelos 10 blocos.
+Todos os textos, números e rotas são fictícios e servem para demonstração. Edite apenas `src/config/site.ts` para personalizar.
