@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
 import { site, tourSections } from "@/config/site";
+import { goToSection } from "@/lib/scroll-to-section";
 
 export function useTour() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -14,10 +15,7 @@ export function useTour() {
       setActiveIndex(bounded);
       const section = tourSections[bounded];
       if (!section) return;
-      document.getElementById(section.id)?.scrollIntoView({
-        behavior: prefersReducedMotion ? "auto" : "smooth",
-        block: "start",
-      });
+      goToSection(section.id, !prefersReducedMotion);
     },
     [prefersReducedMotion],
   );
@@ -25,10 +23,7 @@ export function useTour() {
   const start = useCallback(() => {
     setActiveIndex(0);
     setIsPlaying(true);
-    document.getElementById(tourSections[0]?.id ?? "inicio")?.scrollIntoView({
-      behavior: prefersReducedMotion ? "auto" : "smooth",
-      block: "start",
-    });
+    goToSection(tourSections[0]?.id ?? "inicio", !prefersReducedMotion);
   }, [prefersReducedMotion]);
 
   const stop = useCallback(() => {

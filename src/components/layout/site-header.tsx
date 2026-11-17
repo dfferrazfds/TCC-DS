@@ -4,6 +4,7 @@ import { ArrowUpRight, Compass, Menu, Route, X } from "lucide-react";
 
 import { site, type SectionId } from "@/config/site";
 import { Button } from "@/components/ui/button";
+import { goToSection } from "@/lib/scroll-to-section";
 import { cn } from "@/lib/utils";
 
 interface SiteHeaderProps {
@@ -28,6 +29,12 @@ export function SiteHeader({ activeId, onToggleTour, isTourPlaying }: SiteHeader
     setMenuOpen(false);
   }, [activeId]);
 
+  const navigate = (event: React.MouseEvent<HTMLAnchorElement>, id: SectionId) => {
+    event.preventDefault();
+    setMenuOpen(false);
+    goToSection(id, !reduced);
+  };
+
   return (
     <header
       className={cn(
@@ -36,7 +43,12 @@ export function SiteHeader({ activeId, onToggleTour, isTourPlaying }: SiteHeader
       )}
     >
       <div className="container flex h-20 items-center justify-between gap-6">
-        <a href="#inicio" className="group flex items-center gap-2.5" aria-label={`${site.brand.name} — início`}>
+        <a
+          href="#inicio"
+          onClick={(event) => navigate(event, "inicio")}
+          className="group flex items-center gap-2.5"
+          aria-label={`${site.brand.name} — início`}
+        >
           <span className="relative grid size-10 place-items-center rounded-xl bg-lime-300 text-forest-950 transition-transform duration-300 group-hover:rotate-6">
             <Route className="size-5" aria-hidden="true" />
           </span>
@@ -51,6 +63,7 @@ export function SiteHeader({ activeId, onToggleTour, isTourPlaying }: SiteHeader
             <a
               key={section.id}
               href={`#${section.id}`}
+              onClick={(event) => navigate(event, section.id)}
               aria-current={activeId === section.id ? "location" : undefined}
               className={cn(
                 "relative rounded-full px-3 py-2 text-xs font-medium transition-colors",
@@ -114,7 +127,7 @@ export function SiteHeader({ activeId, onToggleTour, isTourPlaying }: SiteHeader
                 <li key={section.id}>
                   <a
                     href={`#${section.id}`}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={(event) => navigate(event, section.id)}
                     className={cn(
                       "block rounded-xl px-4 py-3 text-sm font-medium transition-colors",
                       activeId === section.id ? "bg-lime-300/10 text-lime-300" : "text-mint-100/70 hover:bg-foreground/5",
